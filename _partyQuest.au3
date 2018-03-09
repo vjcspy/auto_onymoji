@@ -19,10 +19,6 @@ Global $btBackInWaitingId =  GUICtrlCreateButton("BT Back In Waiting",220,50,150
 Global $btEmoInWaitingId =  GUICtrlCreateButton("BT EMO In Waiting",50,90,150,30)
 Global $btInExplorerId =  GUICtrlCreateButton("Button In Explorer",220,90,150,30)
 
-While 1
-_LOG("PTQUEST")
-Sleep(100)
-WEnd
 EndFunc
 
 Func PartyQuestDestroyGUI()

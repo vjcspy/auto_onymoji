@@ -4,7 +4,7 @@
 #include <AutoItConstants.au3>
 #include <WinAPI.au3>
 #include <Windowsconstants.au3> ; Khai báo các hằng $WM_ ... bằng cách include thư viện
-#include-once "_helper.au3"
+#include "_helper.au3"
 
 ; CONFIGURATION
 Const $WINDOW_TITILE = "Untitled - Paint"
@@ -20,6 +20,8 @@ Global $hwnd = $windowHWNDs
 
 ; get Win Position
 Global $aPos = WinGetPos($windowHWNDs)
+If $aPos == 0 Then _ThrowError("NOT FOUND WINDOW") EndIf
+
 ;MsgBox($MB_SYSTEMMODAL, "", "X-Pos: " & $aPos[0] & @CRLF & _"Y-Pos: " & $aPos[1] & @CRLF & _"Width: " & $aPos[2] & @CRLF & _"Height: " & $aPos[3])
 
 Func getWindowX()
@@ -120,12 +122,10 @@ EndFunc
 #Region ### COMMUNICATE WITH WINDOW ###
 ; Click base on realative percent of x,y
 Func clickBaseOnRelativePosition($x,$y,$numberClick = 1)
-   Local $w = ($x * getWindowWidth() /100) + getWindowX()
-   Local $h = ($y * getWindowHeight() /100) + getWindowY()
-   pclick($w, $h, $numberClick)
+   pclick(getRealPosByRelativePos($x,$y)[0], getRealPosByRelativePos($x,$y)[1], $numberClick)
 EndFunc
 
-Func getPositionRelateWindow($x,$y) ;$x, $y must be percent relative width and heigh of current window
+Func getPositionRelateWindow($x,$y)
    Local $a[2]
    If ($x- getWindowX()) <= getWindowWidth() Then
 	  $a[0] = Round(($x- getWindowX()) * 100 / getWindowWidth(),5)
@@ -138,17 +138,17 @@ Func getPositionRelateWindow($x,$y) ;$x, $y must be percent relative width and h
    Else
 	  _ThrowError("Point out of window",1) ; Exit when msgbox closed
    EndIf
-_LOG("Relative position:", $a[0] & " " & $a[1])
+_LOG("Relative position:" & $a[0] & " " & $a[1])
 Return $a
 EndFunc
 
 Func getRealPosByRelativePos($x,$y)
 Local $a[2]
-   $a[1] = Round(getWindowX() + $x * getWindowWidth()/100 ,5)
-   $a[2] = Round(getWindowY() + $y * getWindowHeight()/100 ,5)
+$a[1] = Round(getWindowX() + $x * getWindowWidth()/100 ,5)
+$a[2] = Round(getWindowY() + $y * getWindowHeight()/100 ,5)
 
-   _LOG("Real position:", $a[0] & " " & $a[1])
-   Return $a
+;_LOG("Real position:", $a[0] & " " & $a[1])
+Return $a
 EndFunc
 
 Func clickOn($x,$y,$numberClick = 1)

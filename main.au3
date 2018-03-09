@@ -113,6 +113,7 @@ GUICtrlSetOnEvent($btBackInBattleId, "checkDataInMouse")
 
 $btBackInBattleX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInBattleX",0)
 $btBackInBattleY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInBattleY",0)
+$btBackInBattleCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInBattleCl",0)
 
 If $btBackInBattleX == 0 Or $btBackInBattleY == 0 Then
    GUICtrlSetBkColor($btBackInBattleId,$COLOR_RED)
@@ -125,6 +126,7 @@ GUICtrlSetOnEvent($btBackInWaitingId, "checkDataInMouse")
 
 $btBackInWaitingX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInWaitingX",0)
 $btBackInWaitingY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInWaitingY",0)
+$btBackInWaitingCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInWaitingCl",0)
 
 If $btBackInWaitingX == 0 Or $btBackInWaitingY == 0 Then
    GUICtrlSetBkColor($btBackInWaitingId,$COLOR_RED)
@@ -137,6 +139,7 @@ GUICtrlSetOnEvent($btEmoInWaitingId, "checkDataInMouse")
 
 $btEmoInWaitingX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btEmoInWaitingX",0)
 $btEmoInWaitingY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btEmoInWaitingY",0)
+$btEmoInWaitingCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btEmoInWaitingCl",0)
 
 If $btEmoInWaitingX == 0 Or $btEmoInWaitingY == 0 Then
    GUICtrlSetBkColor($btEmoInWaitingId,$COLOR_RED)
@@ -145,10 +148,11 @@ Else
 EndIf
 ;
 Global $btInExplorerId =  GUICtrlCreateButton("Button In Explorer",220,90,150,30)
-$btInExplorerId($btEmoInWaitingId, "checkDataInMouse")
+GUICtrlSetOnEvent($btEmoInWaitingId, "checkDataInMouse")
 
 $btInExplorerX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInExplorerX",0)
 $btInExplorerY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInExplorerY",0)
+$btInExplorerCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInExplorerCl",0)
 
 If $btInExplorerX == 0 Or $btInExplorerY == 0 Then
    GUICtrlSetBkColor($btInExplorerId,$COLOR_RED)
@@ -160,7 +164,29 @@ EndIf
 EndFunc
 
 Func checkDataInMouse()
- GetPos()
+$mPos = GetPos()
+$mPosRelative = getPositionRelateWindow($mPos[0],$mPos[1])
+$realPos = getRealPosByRelativePos($mPosRelative[0],$mPosRelative[1])
+$iColor = PixelGetColor(getRealPosByRelativePos($realPos[0],$realPos[1],$windowHWNDs)
+Select
+	  Case @GUI_CtrlId == $btBackInBattleId
+		 _StreamIniWrite($PARTYQUEST_SECTION_CONFIG, "$btBackInBattleX",$mPosRelative[0])
+		 _StreamIniWrite($PARTYQUEST_SECTION_CONFIG, "$btBackInBattleY",$mPosRelative[1])
+		 _StreamIniWrite($PARTYQUEST_SECTION_CONFIG, "$btBackInBattleCl",$iColor + "")
+	  Case @GUI_CtrlId == $btBackInWaitingId
+		 _StreamIniWrite($PARTYQUEST_SECTION_CONFIG, "$btBackInWaitingX",$mPosRelative[0])
+		 _StreamIniWrite($PARTYQUEST_SECTION_CONFIG, "$btBackInWaitingY",$mPosRelative[1])
+		 _StreamIniWrite($PARTYQUEST_SECTION_CONFIG, "$btBackInWaitingCl",$iColor + "")
+	  Case @GUI_CtrlId == $btEmoInWaitingId
+		 _StreamIniWrite($PARTYQUEST_SECTION_CONFIG, "$btEmoInWaitingX",$mPosRelative[0])
+		 _StreamIniWrite($PARTYQUEST_SECTION_CONFIG, "$btEmoInWaitingY",$mPosRelative[1])
+		 _StreamIniWrite($PARTYQUEST_SECTION_CONFIG, "$btEmoInWaitingCl",$iColor + "")
+	  Case @GUI_CtrlId == $btInExplorerId
+		 _StreamIniWrite($PARTYQUEST_SECTION_CONFIG, "$btInExplorerX",$mPosRelative[0])
+		 _StreamIniWrite($PARTYQUEST_SECTION_CONFIG, "$btInExplorerY",$mPosRelative[1])
+		 _StreamIniWrite($PARTYQUEST_SECTION_CONFIG, "$btInExplorerCl",$iColor + "")
+EndSelect
+
 EndFunc
 
 #EndRegion
