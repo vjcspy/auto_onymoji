@@ -2,7 +2,7 @@
 
 #include <WinAPIFiles.au3>
 
-Func _StreamIniDelete($sSection = "", $sKey = Default, $sStream = "DEFAULT")
+Func _StreamIniDelete($sSection = "", $sKey = Default, $sStream = "Archangel.ini")
     If $sSection = "" Then
         ;completely delete ini file stream through winapi (built in filedelete doesn't support it)
         Return _WinAPI_DeleteFile(_StreamIniPath($sStream, 1))
@@ -11,37 +11,37 @@ Func _StreamIniDelete($sSection = "", $sKey = Default, $sStream = "DEFAULT")
     EndIf
 EndFunc
 
-Func _StreamIniRead($sSection, $sKey, $sDefault, $sStream = "DEFAULT")
+Func _StreamIniRead($sSection, $sKey, $sDefault, $sStream = "Archangel.ini")
     Return IniRead(_StreamIniPath($sStream, 1), $sSection, $sKey, $sDefault)
 EndFunc
 
-Func _StreamIniReadSection($sSection, $sStream = "DEFAULT")
+Func _StreamIniReadSection($sSection, $sStream = "Archangel.ini")
     Return IniReadSection(_StreamIniPath($sStream, 1), $sSection)
 EndFunc
 
-Func _StreamIniReadSectionNames($sStream = "DEFAULT")
+Func _StreamIniReadSectionNames($sStream = "Archangel.ini")
     Return IniReadSectionNames(_StreamIniPath($sStream, 1))
 EndFunc
 
-Func _StreamIniRenameSection($sSection, $sNewSection, $iFlag = 0, $sStream = "DEFAULT")
+Func _StreamIniRenameSection($sSection, $sNewSection, $iFlag = 0, $sStream = "Archangel.ini")
     Return IniRenameSection(_StreamIniPath($sStream), $sSection, $sNewSection, $iFlag)
 EndFunc
 
-Func _StreamIniWrite($sSection, $sKey, $sValue, $sStream = "DEFAULT")
+Func _StreamIniWrite($sSection, $sKey, $sValue, $sStream = "Archangel.ini")
     Return IniWrite(_StreamIniPath($sStream), $sSection, $sKey, $sValue)
 EndFunc
 
-Func _StreamIniWriteSection($sSection, $vData, $iIndex = 1, $sStream = "DEFAULT")
+Func _StreamIniWriteSection($sSection, $vData, $iIndex = 1, $sStream = "Archangel.ini")
     Return IniWriteSection(_StreamIniPath($sStream), $sSection, $vData, $iIndex)
 EndFunc
 
-Func _StreamIniPath($sStream = "DEFAULT", $iRead = 0)
+Func _StreamIniPath($sStream = "Archangel.ini", $iRead = 0)
     Local Static $sBase = ""
     Local $sPath = ""
 
     If StringLen($sStream) Then
         If $sBase = "" Then
-            If DriveGetFileSystem(StringLeft(@ScriptDir, 2)) = "NTFS" Then
+            If DriveGetFileSystem(StringLeft(@ScriptDir, 2)) == "NTFS" Then
                 ;current drive is NTFS (supports streams)
                 $sBase = @ScriptFullPath
             Else
@@ -59,5 +59,5 @@ Func _StreamIniPath($sStream = "DEFAULT", $iRead = 0)
         EndIf
     EndIf
 
-    Return $sPath
+    Return $sStream
 EndFunc

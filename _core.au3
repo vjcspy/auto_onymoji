@@ -7,7 +7,7 @@
 #include "_helper.au3"
 
 ; CONFIGURATION
-Const $WINDOW_TITILE = "Untitled - Paint"
+Const $WINDOW_TITILE = "NoxPlayer"
 
 #Region ### GET HANDLE ###
 
@@ -53,7 +53,7 @@ Const $MK_MBUTTON = 0x10
 Const $MK_RBUTTON = 0x2  ; Khai báo các giá trị hằng
 
 
-Func pclick($x=0,$y=0,$numberOfClick = 1,$button='Left Click')
+Func pclick($x=0,$y=0,$numberOfClick = 1,$button='Left Double Click')
 
 $lParam = ($y * 65536) + ($x)
 
@@ -144,11 +144,15 @@ EndFunc
 
 Func getRealPosByRelativePos($x,$y)
 Local $a[2]
-$a[1] = Round(getWindowX() + $x * getWindowWidth()/100 ,5)
-$a[2] = Round(getWindowY() + $y * getWindowHeight()/100 ,5)
+$a[0] = Round(getWindowX() + $x * getWindowWidth()/100 ,5)
+$a[1] = Round(getWindowY() + $y * getWindowHeight()/100 ,5)
 
 ;_LOG("Real position:", $a[0] & " " & $a[1])
 Return $a
+EndFunc
+
+Func getRealCoordinateBaseOnPercent($x,$y)
+   Return getRealPosByRelativePos($x,$y)
 EndFunc
 
 Func clickOn($x,$y,$numberClick = 1)
