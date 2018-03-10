@@ -7,6 +7,7 @@
 
 Const $TASKS = "|PartyQuest|Test";
 Const $PARTYQUEST_SECTION_CONFIG = "partyQuest"
+Global $isTesting = True
 
 #Region ### START Koda GUI section ### Form=
 Opt("GUIOnEventMode", 1)
@@ -77,53 +78,31 @@ HotKeySet("{ESC}","Close") ;Press ESC key to quit
 
 #EndRegion
 
-PartyQuestCreateGUI()
- While 1
-   Select
-	  Case $task == "Test"
-		 test()
-	  Case $task == "PartyQuest"
-		 _LOG("START_PartyQuest")
-		 While 1
-		 If $task <> "PartyQuest" Then ExitLoop
-		 checkStatePartyMap()
-		 Sleep(2000)
-		 WEnd
-	  Case Else
-		 ;_LOG("DO NOTHING")
-	  EndSelect
+#Region ### General Button - Reuse ###
+Global $btBackInWaitingId,$btEmoInWaitingId,$btQuitOKId
+Func GeneralUICreate()
+   IF $btBackInBattleId <> "" Then GUICtrlDelete($btBackInBattleId) EndIf
+   IF $btInExplorerId <> "" Then GUICtrlDelete($btInExplorerId) EndIf
+   IF $btInviteId <> "" Then GUICtrlDelete($btInviteId) EndIf
 
-   Sleep(1000)
-WEnd
+   ;
+   $btBackInBattleId =  GUICtrlCreateButton("BT In Battle",50,50,150,30)
+   GUICtrlSetOnEvent($btBackInBattleId, "checkDataInMouse")
 
+   ;
+   $btInExplorerId =  GUICtrlCreateButton("Button In Explorer",220,90,150,30)
+   GUICtrlSetOnEvent($btInExplorerId, "checkDataInMouse")
+
+   ;
+   $btInviteId =  GUICtrlCreateButton("BT Invite",50,130,150,30)
+   GUICtrlSetOnEvent($btInviteId, "checkDataInMouse")
+
+EndFunc
+
+#EndRegion
 
 #Region ### PartyMap ###
-
 Func checkStatePartyMap()
-
-$btBackInBattleX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInBattleX",0)
-$btBackInBattleY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInBattleY",0)
-$btBackInBattleCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInBattleCl",0)
-
-$btBackInWaitingX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInWaitingX",0)
-$btBackInWaitingY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInWaitingY",0)
-$btBackInWaitingCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInWaitingCl",0)
-
-$btEmoInWaitingX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btEmoInWaitingX",0)
-$btEmoInWaitingY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btEmoInWaitingY",0)
-$btEmoInWaitingCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btEmoInWaitingCl",0)
-
-$btInExplorerX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInExplorerX",0)
-$btInExplorerY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInExplorerY",0)
-$btInExplorerCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInExplorerCl",0)
-
-$btInviteX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInviteX",0)
-$btInviteY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInviteY",0)
-$btInviteCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInviteCl",0)
-
-$btQuitOkX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btQuitOkX",0)
-$btQuitOkY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btQuitOkY",0)
-$btQuitOkCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btQuitOkCl",0)
 
 ; luc danh nhau thi nut back D5C4A2 va co vi tri tuong doi 2.8085 9.6960
 Local $realPositionOfBackButonInBattle = getRealCoordinateBaseOnPercent($btBackInBattleX,$btBackInBattleY)
@@ -153,8 +132,9 @@ Local $realPosOfSpamClick = getRealCoordinateBaseOnPercent(22.85106,7.95947)
 
 If $btPartyColor == $btInviteCl Then ; when invite
    _LOG("PARTY INVITE")
-   MouseClick($MOUSE_CLICK_LEFT, $realPosButtonParty[0], $realPosButtonParty[1], 2)
-   ;pclick($realPosButtonParty[0], $realPosButtonParty[1])
+   IF $isTesting == FALSE THEN
+	  MouseClick($MOUSE_CLICK_LEFT, $realPosButtonParty[0], $realPosButtonParty[1], 2)
+   EndIf
 ElseIf $btInExploColor == $btInExplorerCl Then ;when explorer
     _LOG("IN EXPLORER")
 ElseIf $btBackInWaitColor == $btBackInWaitingCl Then ;when waiting
@@ -162,108 +142,116 @@ ElseIf $btBackInWaitColor == $btBackInWaitingCl Then ;when waiting
 	  _LOG("WAITING")
    Else
 	  _LOG("OUTED")
-    MouseClick($MOUSE_CLICK_LEFT, $realPosOfBackButtonInWait[0], $realPosOfBackButtonInWait[1], 2)
-	;pclick($realPosOfBackButtonInWait[0], $realPosOfBackButtonInWait[1])
+	  IF $isTesting == FALSE THEN
+		 MouseClick($MOUSE_CLICK_LEFT, $realPosOfBackButtonInWait[0], $realPosOfBackButtonInWait[1], 2)
+	  EndIf
+
 	Sleep(500)
-	MouseClick($MOUSE_CLICK_LEFT, $realPosOfOKBackButtonInWait[0], $realPosOfOKBackButtonInWait[1], 2)
-	;pclick($realPosOfOKBackButtonInWait[0], $realPosOfOKBackButtonInWait[1])
+	IF $isTesting == FALSE THEN
+	  MouseClick($MOUSE_CLICK_LEFT, $realPosOfOKBackButtonInWait[0], $realPosOfOKBackButtonInWait[1], 2)
+	EndIf
    EndIf
 ElseIf $btBackInBatteleColor == $btBackInBattleCl Then ;when battle
     _LOG("IN BATELE")
 Else
 	_LOG("SPAM")
-   MouseClick($MOUSE_CLICK_LEFT, $realPosOfSpamClick[0], $realPosOfSpamClick[1], 2)
-   ;pclick($realPosOfSpamClick[0], $realPosOfSpamClick[1])
+   IF $isTesting == FALSE THEN
+	  MouseClick($MOUSE_CLICK_LEFT, $realPosOfSpamClick[0], $realPosOfSpamClick[1], 2)
+   EndIf
 EndIf
 
 EndFunc
 
+Global $btBackInBattleId,$btInExplorerId,$btInviteId, $btRewardId
 Func PartyQuestCreateGUI()
-;
-Global $btBackInBattleId =  GUICtrlCreateButton("BT In Battle",50,50,150,30)
-GUICtrlSetOnEvent($btBackInBattleId, "checkDataInMouse")
-
-$btBackInBattleX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInBattleX",0)
-$btBackInBattleY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInBattleY",0)
-$btBackInBattleCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInBattleCl",0)
-
-If $btBackInBattleX == 0 Or $btBackInBattleY == 0 Then
-   GUICtrlSetBkColor($btBackInBattleId,$COLOR_RED)
-Else
-   GUICtrlSetBkColor($btBackInBattleId, $COLOR_GREEN)
-EndIf
+   IF $btBackInWaitingId <> "" Then GUICtrlDelete($btBackInWaitingId) EndIf
+   IF $btEmoInWaitingId <> "" Then GUICtrlDelete($btEmoInWaitingId) EndIf
+   IF $btQuitOKId <> "" Then GUICtrlDelete($btQuitOKId) EndIf
 
 ;
-Global $btBackInWaitingId =  GUICtrlCreateButton("BT Back In Waiting",220,50,150,30)
+$btBackInWaitingId =  GUICtrlCreateButton("BT Back In Waiting",220,50,150,30)
 GUICtrlSetOnEvent($btBackInWaitingId, "checkDataInMouse")
 
-$btBackInWaitingX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInWaitingX",0)
-$btBackInWaitingY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInWaitingY",0)
-$btBackInWaitingCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInWaitingCl",0)
+;
+$btEmoInWaitingId =  GUICtrlCreateButton("BT EMO In Waiting",50,90,150,30)
+GUICtrlSetOnEvent($btEmoInWaitingId, "checkDataInMouse")
 
+;
+$btQuitOKId =  GUICtrlCreateButton("$btQuitOKId",220,130,150,30)
+GUICtrlSetOnEvent($btQuitOKId, "checkDataInMouse")
+
+$btRewardId =  GUICtrlCreateButton("$btRewardId",50,170,150,30)
+GUICtrlSetOnEvent($btRewardId, "checkDataInMouse")
+
+EndFunc
+#EndRegion
+
+#Region INI_DATA
+Func initINIData()
+; GENERAL
+Global $btBackInBattleX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInBattleX",0)
+Global $btBackInBattleY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInBattleY",0)
+Global $btBackInBattleCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInBattleCl",0)
+   If $btBackInBattleX == 0 Or $btBackInBattleY == 0 Then
+	  GUICtrlSetBkColor($btBackInBattleId,$COLOR_RED)
+   Else
+	  GUICtrlSetBkColor($btBackInBattleId, $COLOR_GREEN)
+   EndIf
+
+Global $btInExplorerX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInExplorerX",0)
+Global $btInExplorerY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInExplorerY",0)
+Global $btInExplorerCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInExplorerCl",0)
+   If $btInExplorerX == 0 Or $btInExplorerY == 0 Then
+	  GUICtrlSetBkColor($btInExplorerId,$COLOR_RED)
+   Else
+	  GUICtrlSetBkColor($btInExplorerId, $COLOR_GREEN)
+   EndIf
+
+Global $btInviteX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInviteX",0)
+Global $btInviteY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInviteY",0)
+Global $btInviteCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInviteCl",0)
+   If $btInviteX == 0 Or $btInviteY == 0 Then
+	  GUICtrlSetBkColor($btInviteId,$COLOR_RED)
+   Else
+	  GUICtrlSetBkColor($btInviteId, $COLOR_GREEN)
+   EndIf
+
+; PARTY MAP
+Global $btBackInWaitingX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInWaitingX",0)
+Global $btBackInWaitingY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInWaitingY",0)
+Global $btBackInWaitingCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btBackInWaitingCl",0)
 If $btBackInWaitingX == 0 Or $btBackInWaitingY == 0 Then
    GUICtrlSetBkColor($btBackInWaitingId,$COLOR_RED)
 Else
    GUICtrlSetBkColor($btBackInWaitingId, $COLOR_GREEN)
 EndIf
-;
 
-Global $btEmoInWaitingId =  GUICtrlCreateButton("BT EMO In Waiting",50,90,150,30)
-GUICtrlSetOnEvent($btEmoInWaitingId, "checkDataInMouse")
-
-$btEmoInWaitingX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btEmoInWaitingX",0)
-$btEmoInWaitingY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btEmoInWaitingY",0)
-$btEmoInWaitingCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btEmoInWaitingCl",0)
-
+Global $btEmoInWaitingX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btEmoInWaitingX",0)
+Global $btEmoInWaitingY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btEmoInWaitingY",0)
+Global $btEmoInWaitingCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btEmoInWaitingCl",0)
 If $btEmoInWaitingX == 0 Or $btEmoInWaitingY == 0 Then
    GUICtrlSetBkColor($btEmoInWaitingId,$COLOR_RED)
 Else
    GUICtrlSetBkColor($btEmoInWaitingId, $COLOR_GREEN)
 EndIf
-;
 
-Global $btInExplorerId =  GUICtrlCreateButton("Button In Explorer",220,90,150,30)
-GUICtrlSetOnEvent($btInExplorerId, "checkDataInMouse")
-
-$btInExplorerX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInExplorerX",0)
-$btInExplorerY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInExplorerY",0)
-$btInExplorerCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInExplorerCl",0)
-
-If $btInExplorerX == 0 Or $btInExplorerY == 0 Then
-   GUICtrlSetBkColor($btInExplorerId,$COLOR_RED)
-Else
-   GUICtrlSetBkColor($btInExplorerId, $COLOR_GREEN)
-EndIf
-;
-
-;
-Global $btInviteId =  GUICtrlCreateButton("BT Invite",50,130,150,30)
-GUICtrlSetOnEvent($btInviteId, "checkDataInMouse")
-
-$btInviteX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInviteX",0)
-$btInviteY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInviteY",0)
-$btInviteCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btInviteCl",0)
-
-If $btInviteX == 0 Or $btInviteY == 0 Then
-   GUICtrlSetBkColor($btInviteId,$COLOR_RED)
-Else
-   GUICtrlSetBkColor($btInviteId, $COLOR_GREEN)
-EndIf
-;
-
-Global $btQuitOKId =  GUICtrlCreateButton("$btQuitOKId",220,130,150,30)
-GUICtrlSetOnEvent($btQuitOKId, "checkDataInMouse")
-
-$btQuitOkX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btQuitOkX",0)
-$btQuitOkY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btQuitOkY",0)
-$btQuitOkCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btQuitOkCl",0)
-
+Global $btQuitOkX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btQuitOkX",0)
+Global $btQuitOkY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btQuitOkY",0)
+Global $btQuitOkCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btQuitOkCl",0)
 If $btQuitOkX == 0 Or $btQuitOkY == 0 Then
    GUICtrlSetBkColor($btQuitOKId,$COLOR_RED)
 Else
    GUICtrlSetBkColor($btQuitOKId, $COLOR_GREEN)
 EndIf
-;
+
+Global $btRewardX = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btRewardX",0)
+Global $btRewardY = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btRewardY",0)
+Global $btRewardCl = _StreamIniRead($PARTYQUEST_SECTION_CONFIG, "$btRewardCl",0)
+If $btRewardX == 0 Or $btRewardY == 0 Then
+   GUICtrlSetBkColor($btRewardId,$COLOR_RED)
+Else
+   GUICtrlSetBkColor($btRewardId, $COLOR_GREEN)
+EndIf
 
 EndFunc
 
@@ -304,8 +292,39 @@ Select
 		 _StreamIniWrite($PARTYQUEST_SECTION_CONFIG, "$btQuitOkX",$mPosRelative[0])
 		 _StreamIniWrite($PARTYQUEST_SECTION_CONFIG, "$btQuitOkY",$mPosRelative[1])
 		 _StreamIniWrite($PARTYQUEST_SECTION_CONFIG, "$btQuitOkCl",$iColor + "")
+	  Case @GUI_CtrlId == $btRewardId
+		 _StreamIniWrite($PARTYQUEST_SECTION_CONFIG, "$btRewardX",$mPosRelative[0])
+		 _StreamIniWrite($PARTYQUEST_SECTION_CONFIG, "$btRewardY",$mPosRelative[1])
+		 _StreamIniWrite($PARTYQUEST_SECTION_CONFIG, "$btRewardCl",$iColor + "")
 EndSelect
 
+; reload data
+initINIData()
 EndFunc
 
+#EndRegion
+
+#Region TASK
+
+GeneralUICreate()
+PartyQuestCreateGUI()
+
+initINIData()
+ While 1
+   Select
+	  Case $task == "Test"
+		 test()
+	  Case $task == "PartyQuest"
+		 _LOG("START_PartyQuest")
+		 While 1
+		 If $task <> "PartyQuest" Then ExitLoop
+		 checkStatePartyMap()
+		 Sleep(2000)
+		 WEnd
+	  Case Else
+		 ;_LOG("DO NOTHING")
+	  EndSelect
+
+   Sleep(1000)
+WEnd
 #EndRegion
